@@ -1,0 +1,17 @@
+.vscode
+src/*/obj
+src/*/bin
+src/*/out
+src/*/tmp
+.vs/
+*.pdf
+*.swp
+.DS_Store
+.sonarqube
+.scannerwork
+dumps
+coverage.*
+lcov.info
+*~
+*.tmp
+.idea/
