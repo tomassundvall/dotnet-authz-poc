@@ -46,5 +46,13 @@ namespace Application.Controllers
         {
             return "Hello World!";
         }
+
+
+        [Authorize("purge")]
+        [HttpGet("purge")]
+        public string GetPurge()
+        {
+            return "Hello fucking puurge World!";
+        }
     }
 }

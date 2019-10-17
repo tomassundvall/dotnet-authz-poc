@@ -26,7 +26,7 @@ namespace Application
         {
             IdentityModelEventSource.ShowPII = true;
 
-            services.AddMvc();
+            services.AddControllers();
             
             services.AddAuthentication(opt =>
             {
@@ -46,12 +46,13 @@ namespace Application
                 };
             });
 
-            services.AddAuthorization(opt =>
-            {
-                opt.AddPolicy("read", policy => policy.Requirements.Add(new HasScopeRequirement("read", "https://jerrie.auth0.com/")));
-                opt.AddPolicy("write", policy => policy.Requirements.Add(new HasScopeRequirement("write", "https://jerrie.auth0.com/")));
-            });
+            // services.AddAuthorization(opt =>
+            // {
+            //     opt.AddPolicy("read", policy => policy.Requirements.Add(new HasScopeRequirement("read", "https://jerrie.auth0.com/")));
+            //     opt.AddPolicy("write", policy => policy.Requirements.Add(new HasScopeRequirement("write", "https://jerrie.auth0.com/")));
+            // });
 
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
