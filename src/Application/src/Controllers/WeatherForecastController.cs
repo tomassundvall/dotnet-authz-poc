@@ -38,5 +38,13 @@ namespace Application.Controllers
             })
             .ToArray();
         }
+
+
+        [Authorize("write")]
+        [HttpGet("write")]
+        public string GetHelloWorld()
+        {
+            return "Hello World!";
+        }
     }
 }

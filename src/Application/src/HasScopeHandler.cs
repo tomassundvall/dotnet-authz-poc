@@ -22,6 +22,7 @@ namespace Application
 
         public override Task HandleAsync(AuthorizationHandlerContext context)
         {
+            Console.WriteLine("TEST AuthorizationHandlerContext");
             return base.HandleAsync(context);
         }
 
@@ -37,7 +38,6 @@ namespace Application
             HasScopeRequirement requirement)
         {
             Console.WriteLine("Authorize..." + context.User.Claims.Count());
-            Console.WriteLine(JsonConvert.SerializeObject(context.User.Claims, Formatting.Indented));
 
             // If the user does not have the scope claim, get out of here
             if (!context.User.HasClaim(c => c.Type == "scope" && c.Issuer == requirement.Issuer))

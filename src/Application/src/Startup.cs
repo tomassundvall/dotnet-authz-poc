@@ -8,11 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
 
 namespace Application
 {
@@ -25,14 +20,13 @@ namespace Application
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Add("scope", "read");
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Add("read", "scope");
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = true;
             IdentityModelEventSource.ShowPII = true;
+
+            services.AddMvc();
             
             services.AddAuthentication(opt =>
             {
@@ -50,44 +44,35 @@ namespace Application
                     ValidateAudience = false,
                     ValidateLifetime = false
                 };
-
-                Console.WriteLine("TEEEST");
-                opt.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = async ctx =>
-                    {
-                        Console.WriteLine("TEEEST 2 ");
-                        ctx.Principal.AddIdentity(new ClaimsIdentity(new List<Claim>
-                        {
-                            new Claim("scope", "read")
-                        }));
-                    }
-                };
             });
 
             services.AddAuthorization(opt =>
             {
                 opt.AddPolicy("read", policy => policy.Requirements.Add(new HasScopeRequirement("read", "https://jerrie.auth0.com/")));
+                opt.AddPolicy("write", policy => policy.Requirements.Add(new HasScopeRequirement("write", "https://jerrie.auth0.com/")));
             });
-
-            services.AddControllers();
 
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+            app.UseHttpsRedirection();
 
             app.UseEndpoints(endpoints =>
             {
